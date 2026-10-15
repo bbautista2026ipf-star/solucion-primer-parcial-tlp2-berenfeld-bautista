@@ -115,8 +115,64 @@ export const getMyProjects = async (req, res) => {
 export const updateProject = async (req, res) => {
   try {
     // TODO: 1. Actualizar el project con los datos recibidos.
+    const project = await ProjectModel.findByPk(req.params.id);
+    if (!project)
+      return res.status(404).json({ msg: "Proyecto no encontrado" });
+
+    const {
+      code,
+      name,
+      description,
+      status,
+      start_date,
+      budget,
+      leader_id,
+      technologies,
+    } = req.body;
+
+    await project.update({
+      code,
+      name,
+      description,
+      status,
+      start_date,
+      budget,
+      leader_id,
+    });
+
     // TODO: 2. Reemplazar sus technologies si vienen en el body.
+    if (technologies) {
+      await ProjectTechnologyModel.destroy({
+        where: { project_id: project.id },
+      });
+      await ProjectTechnologyModel.bulkCreate(
+        technologies.map((technology_id) => ({
+          project_id: project.id,
+          technology_id,
+        }))
+      );
+    }
+
     // TODO: 3. Responder con código 200 y el project actualizado, incluyendo su leader y sus technologies.
+    const updatedProject = await ProjectModel.findByPk(project.id, {
+      include: [
+        {
+          model: UserModel,
+          as: "leader",
+          attributes: { exclude: ["password"] },
+        },
+        {
+          model: TechnologyModel,
+          as: "technologies",
+          through: { attributes: [] },
+        },
+      ],
+    });
+
+    return res.status(200).json({
+      msg: "Proyecto actualizado correctamente",
+      data: updatedProject,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ msg: "Error interno del servidor" });
@@ -126,6 +182,12 @@ export const updateProject = async (req, res) => {
 export const deleteProject = async (req, res) => {
   try {
     // TODO: 1. Eliminar el project y responder con código 204 sin devolver ningún mensaje.
+    const project = await ProjectModel.findByPk(req.params.id);
+    if (!project)
+      return res.status(404).json({ msg: "Proyecto no encontrado" });
+
+    await project.destroy();
+    return res.status(204).send();
   } catch (error) {
     console.log(error);
     return res.status(500).json({ msg: "Error interno del servidor" });
