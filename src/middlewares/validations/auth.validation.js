@@ -13,7 +13,10 @@ export const registerValidation = [
     .isAlphanumeric()
     .withMessage("El nombre de usuario solo puede tener letras y números")
     .custom(async (username) => {
-      const found = await UserModel.findOne({ where: { username } });
+      const found = await UserModel.findOne({
+        where: { username },
+        paranoid: false,
+      });
       if (found) throw new Error("El nombre de usuario ya está en uso");
       return true;
     }),
@@ -25,7 +28,10 @@ export const registerValidation = [
     .isEmail()
     .withMessage("El email no tiene un formato válido")
     .custom(async (email) => {
-      const found = await UserModel.findOne({ where: { email } });
+      const found = await UserModel.findOne({
+        where: { email },
+        paranoid: false,
+      });
       if (found) throw new Error("El email ya está registrado");
       return true;
     }),
