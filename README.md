@@ -54,6 +54,48 @@ Al iniciar se verifica la conexión y se crean las tablas con sequelize.sync(). 
 
 6. Importar en Postman el archivo Primer-Parcial.postman_collection.json. Después del login, Postman guarda la cookie token y la envía en las siguientes peticiones.
 
+## Datos a tener en cuenta
+
+- employee_number usa el formato EMP-0000, por ejemplo EMP-0001.
+- El code de un proyecto usa el formato PRJ-0000, por ejemplo PRJ-0001.
+- start_date usa el formato YYYY-MM-DD.
+- La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.
+- Si no se envía role al registrarse, el usuario queda como developer. Para probar las rutas de administrador hay que registrar un usuario con "role": "administrator".
+- Al crear un proyecto, si no se envía leader_id, el líder es el usuario que inició sesión.
+- Las technologies de un proyecto se envían como un array de ids, por ejemplo [1, 2]. Solo un administrator puede crear technologies.
+
+Ejemplo de registro:
+
+```json
+{
+  "username": "bautista",
+  "email": "bautista@mail.com",
+  "password": "Clave1234",
+  "role": "developer",
+  "profile": {
+    "employee_number": "EMP-0001",
+    "first_name": "Bautista",
+    "last_name": "Berenfeld",
+    "phone": "3704123456"
+  }
+}
+```
+
+Ejemplo de proyecto:
+
+```json
+{
+  "code": "PRJ-0001",
+  "name": "Sistema de turnos",
+  "description": "Gestión de turnos para una clínica",
+  "status": "planning",
+  "start_date": "2026-01-01",
+  "budget": 1500,
+  "leader_id": 1,
+  "technologies": [1, 2]
+}
+```
+
 ## Endpoints
 
 | Método | Ruta | Acceso |
